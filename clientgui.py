@@ -5,8 +5,25 @@ from pygame.locals import *
 from clientsocket import *
 
  
-pygame.init()
  
+pygame.init()
+
+
+snowimg = pygame.image.load("ressources/snow.png")
+snowimg = pygame.transform.scale(snowimg,((50,50)))
+grassimg = pygame.image.load("ressources/grass.png")
+grassimg = pygame.transform.scale(grassimg,((50,50)))
+grass2img = pygame.image.load("ressources/grass2.png")
+grass2img = pygame.transform.scale(grass2img,((50,50)))
+sandimg = pygame.image.load("ressources/sand.png")
+sandimg = pygame.transform.scale(sandimg,((50,50)))
+waterimg = pygame.image.load("ressources/water.png")
+waterimg = pygame.transform.scale(waterimg,((50,50)))
+treeimg = pygame.image.load("ressources/tree.png")
+treeimg = pygame.transform.scale(treeimg,((50,50)))
+mountainsimg = pygame.image.load("ressources/mountains.png")
+mountainsimg = pygame.transform.scale(mountainsimg,((50,50)))
+
 base_font = pygame.font.Font(None, 32)
 fps = 60
 run = False
@@ -30,21 +47,21 @@ class Player():
         self.rect = Rect(width/2-20,height/2-20,40,40)
         pygame.draw.rect(screen, (255,255,0), self.rect)
         self.text_surface = base_font.render(self.name, True, (255, 255, 255))
-        screen.blit(self.text_surface, (width/2, height/2-40))
+        screen.blit(self.text_surface, (width/2-20, height/2-40))
     def move(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
-            self.camx -= 5
-            self.x +=5
+            self.camx -= 15
+            self.x +=15
         if keys[pygame.K_LEFT]:
-            self.camx += 5
-            self.x -=5
+            self.camx += 15
+            self.x -=15
         if keys[pygame.K_UP]:
-            self.camy += 5
-            self.y-=5
+            self.camy += 15
+            self.y-=15
         if keys[pygame.K_DOWN]:
-            self.camy -= 5
-            self.y +=5
+            self.camy -= 15
+            self.y +=15
     def update(self):
         self.move()
         self.draw()
@@ -64,12 +81,11 @@ class Entity():
         self.rect = Rect(self.x+self.camx,self.y+self.camy,40,40)
         pygame.draw.rect(screen, (255,0,0), self.rect)
         self.text_surface = base_font.render(self.pseudo, True, (255, 255, 255))
-        screen.blit(self.text_surface, (self.x+self.camx, self.y-40+self.camy))
+        screen.blit(self.text_surface, (self.x+self.camx-20, self.y-40+self.camy))
     def update(self):
-        global entities, camx,camy
+        global entities
         
-        self.camx = camx
-        self.camy = camy
+        
         self.draw()
         self.delete = 1
         for ID in self.ids:
@@ -136,36 +152,50 @@ def generate_map(surf):
     for line in f:
         length = len(line)
     f.close()
-    spacex = length/2*40
-    spacey = length/2*40
+    spacex = length/2*50
+    spacey = length/2*50
     spacex = -spacex
     spacey = -spacey
     color = (0,0,0)
     
     f = open("map2.txt", 'r')
     for line in f:
-        spacex = length/2*40
+        spacex = length/2*50
         spacex = -spacex
-        print("line")
+        
         for char in line:
             if char == "0":
-                color = (0,120,0)
+                rect = grass2img.get_rect()            
+                surf.blit(grass2img,(spacex,spacey))
             if char == "1":
-                color = (0,200,0)
+                rect = snowimg.get_rect()            
+                surf.blit(snowimg,(spacex,spacey))
             if char == "2":
-                color = (101,67,33)
-            if char == "3":
-                color = (0,120,0)
-            if char == "4":
-                color = (200,200,0)
-            if char == "5":
-                color =(100,100,255)
-            rect = Rect(spacex,spacey,40,40)
+                
+                rect = treeimg.get_rect()
             
-            pygame.draw.rect(surf, color, rect)
-            spacex+= 40
-            print("char")
-        spacey += 40
+                surf.blit(treeimg,(spacex,spacey))
+            if char == "3":
+                rect = grassimg.get_rect()
+            
+                surf.blit(grassimg,(spacex,spacey))
+            if char == "4":
+                rect = sandimg.get_rect()
+            
+                surf.blit(sandimg,(spacex,spacey))
+            if char == "5":
+                rect = waterimg.get_rect()
+            
+                surf.blit(waterimg,(spacex,spacey))
+            if char == "6":
+                rect = mountainsimg.get_rect()
+            
+                surf.blit(mountainsimg,(spacex,spacey))
+                
+            
+            spacex+= 50
+            
+        spacey += 50
     spacey = 0     
         
     f.close()

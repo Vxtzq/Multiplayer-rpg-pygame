@@ -13,8 +13,9 @@ def newplayer(username,password,connectiontype):
     global connected,client
     valid = 0
     globalid = 0
-    IP = socket.gethostbyname(socket.gethostname())
-    PORT = 5566
+    #IP = socket.gethostbyname(socket.gethostname())
+    IP = "localhost"
+    PORT = 4003
     ADDR = (IP, PORT)
     SIZE = 4096
     FORMAT = "utf-8"

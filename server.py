@@ -3,8 +3,9 @@ import threading
 from auth import *
 
 
-IP = socket.gethostbyname(socket.gethostname())
-PORT = 5566
+#IP = socket.gethostbyname(socket.gethostname())
+IP = "localhost"
+PORT = 4003
 ADDR = (IP, PORT)
 SIZE = 1024
 FORMAT = "utf-8"
@@ -21,6 +22,7 @@ def handle_client(conn, addr):
     last_pseudosend = 0
     connected = True
     while connected:
+        
         msg = conn.recv(SIZE).decode(FORMAT)
         #print(msg)
         if msg == "quit":
@@ -33,8 +35,9 @@ def handle_client(conn, addr):
             index = 0
             for pseudo in pseudos:
                 if pseudo[1] == addr[1]:
-                    del pseudo[index]
+                    del pseudo
                 index += 1
+            print(pseudos)
         if msg != "":
             if str(msg)[0] == "p":
                 if not [msg.replace("p",""),addr[1]] in pseudos:

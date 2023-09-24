@@ -8,8 +8,8 @@ import time
 # Generate random map
 def generate ( map_size = 10, start_point = 0, extra_layers=[] ):
     
-    size = 2**map_size
-    
+    size = 1.8**map_size
+    size = int(size)
     # Choose what layers you want
     _ranges = list(range(start_point,map_size))
     _ranges.extend(extra_layers)
@@ -40,7 +40,7 @@ def show(a):
     plt.show()
 
 # Apply some borders
-_ = generate( map_size=7, start_point=3 )
+_ = generate( map_size=11, start_point=3 )
 _ = select(_,0.4, 0.01)
 _ = select(_,0.2, 0.01)
 _ = select(_,0.8, 0.01)

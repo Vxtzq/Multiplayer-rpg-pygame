@@ -3,6 +3,7 @@ import pygame
 import sys
 from clientsocket import *
 from tilemap import *
+
   
 camx,camy = 0,0
 launcherend = True
@@ -251,6 +252,9 @@ while launcherend:
     screen.blit(text_surface, (200, 150))
     success,nouse = button(success,buttonrect3,color1,color3,color2,"Play",white,new="play")
     if success == "play":
+        password_surface = base_font.render("loading map...", True, (0,0,0))
+        # render at position stated in arguments
+        screen.blit(password_surface, (200, 300))
         launcherend = False
     pygame.display.flip()
 pseudosent = 0
@@ -262,7 +266,7 @@ entitychange = 0
 entitiesbackup = []
 
 
-BACKGROUND = pygame.Surface((40*128, 40*128))
+BACKGROUND = pygame.Surface((40*650, 40*650))
 spacex,spacey,BACKGROUND = generate_map(BACKGROUND)
 backgroundwidth = BACKGROUND.get_width()
 backgroundheight = BACKGROUND.get_height()
@@ -301,7 +305,7 @@ while True:
         pass
     xtosend, ytosend, msgtosend = run()
     msg = 'c' + str([xtosend,ytosend])
-    screen.fill((0, 0, 0))
+    
 #    
     if msgtosend == "":
         client.send(msg.encode(FORMAT))
@@ -355,16 +359,18 @@ while True:
             globalid = int(msg.replace("first",""))
             player.ID = globalid
             
-    
-    
+    screen.fill((100, 100, 255))
+    screen.blit(BACKGROUND, (-10000+camx, -10000+camy))
     for entity in entities:
-        
+        entity.camx = camx-20
+        entity.camy = camy-20
         entity.update()
-    screen.blit(BACKGROUND, (-backgroundwidth/2+camx, -backgroundheight/2+camy))
+    
     player.update()
-    if entities != entitiesbackup:
-        entitychange = 1
-    entitiesbackup = entities
+    if entities != [] or entities != None:
+        if entities != entitiesbackup:
+            entitychange = 1
+        entitiesbackup = entities
     clock.tick(60)
     print(clock.get_fps())
     
