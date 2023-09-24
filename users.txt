@@ -1,0 +1,3 @@
+test,suser
+newusertest,testpass
+testsus,amogus
