@@ -52,6 +52,34 @@ client = None
 lastglitter = 0
 show = 1
 
+def generate_map():
+    global tiles
+    
+    f = open("map2.txt", 'r')
+    length = 0
+    for line in f:
+        length = len(line)
+    f.close()
+    spacex = length/2*40
+    spacey = length/2*40
+    spacex = -spacex
+    spacey = -spacey
+    
+    f = open("map2.txt", 'r')
+    for line in f:
+        spacex = length/2*40
+        spacex = -spacex
+        print("line")
+        for char in line:
+            tile = Tile(spacex,spacey,0,0,str(char))
+            tiles.append(tile)
+            spacex+= 40
+            print("char")
+        spacey += 40
+    spacey = 0     
+        
+    f.close()
+
 def text_box(coloraround,events,active,rect,text,last_timer):
     global color_active,color_passive,show
     mycolor = None
@@ -122,6 +150,39 @@ def text_box(coloraround,events,active,rect,text,last_timer):
     # outside of user's text input
     
     return active, text,last_timer
+
+class Tile():
+    def __init__(self,x, y,camx,camy,name):
+        self.x = x
+        self.y = y
+        self.camx = camx
+        self.camy = camy
+        self.name =  name
+        self.transmit = 0
+        self.color = (0,0,200)
+        if name == "0":
+            self.color = (0,120,0)
+        if name == "1":
+            self.color = (0,200,0)
+        if name == "2":
+            self.color = (101,67,33)
+        if name == "3":
+            self.color = (0,120,0)
+        if name == "4":
+            self.color = (200,200,0)
+        if name == "5":
+            (100,100,255)
+        
+    def draw(self):
+        self.rect = Rect(self.x+self.camx,self.y+self.camy,40,40)
+        pygame.draw.rect(screen, self.color, self.rect)
+        
+    def update(self):
+        global camx,camy
+        self.camx = camx
+        self.camy = camy
+        self.draw()  
+
 def button(success,rect,coloractive,colorpassive,coloraround,text,textcolor,font=base_font,new=None):
     global register,client
     
@@ -227,6 +288,7 @@ while launcher:
     clock.tick(60)
 nouse = None    
 while launcherend:
+
     screen.fill((255, 255, 255))
     # display.flip() will update only a portion of the
     # screen to updated, not full area
@@ -354,7 +416,9 @@ while True:
     if entities != entitiesbackup:
         entitychange = 1
     entitiesbackup = entities
+    clock.tick(60)
     print(clock.get_fps())
+    
     pygame.display.flip()
     
     

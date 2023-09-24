@@ -40,7 +40,7 @@ def show(a):
     plt.show()
 
 # Apply some borders
-_ = generate( map_size=7, start_point=3 )
+_ = generate( map_size=8, start_point=3 )
 _ = select(_,0.4, 0.01)
 _ = select(_,0.2, 0.01)
 _ = select(_,0.8, 0.01)

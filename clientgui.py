@@ -90,74 +90,9 @@ class Entity():
                     if self.ID == int(pseudo[1]):
                         self.pseudo = pseudo[0]
                         print(self.pseudo)
-class Tile():
-    def __init__(self,x, y,camx,camy,name):
-        self.x = x
-        self.y = y
-        self.camx = camx
-        self.camy = camy
-        self.name =  name
-        self.color = (0,0,200)
-        if name == "0":
-            self.color = (0,120,0)
-        if name == "1":
-            self.color = (0,200,0)
-        if name == "2":
-            self.color = (101,67,33)
-        if name == "3":
-            self.color = (0,120,0)
-        if name == "4":
-            self.color = (200,200,0)
-        if name == "5":
-            (100,100,255)
+
         
-    def draw(self):
-        self.rect = Rect(self.x+self.camx,self.y+self.camy,40,40)
-        pygame.draw.rect(screen, self.color, self.rect)
-        
-    def update(self):
-        global camx,camy
-        self.camx = camx
-        self.camy = camy
-        
-        self.draw()
-        
-class Tile():
-    def __init__(self,x, y,camx,camy,name):
-        self.x = x
-        self.y = y
-        self.camx = camx
-        self.camy = camy
-        self.name =  name
-        self.transmit = 0
-        self.color = (0,0,200)
-        if name == "0":
-            self.color = (0,0,200)
-        if name == "1":
-            self.color = (0,200,0)
-        if name == "2":
-            self.color = (101,67,33)
-        if name == "3":
-            self.color = (0,120,0)
-        if name == "4":
-            self.color = (200,200,0)
-        if name == "5":
-            (100,100,255)
-        
-    def draw(self):
-        self.rect = Rect(self.x+self.camx,self.y+self.camy,40,40)
-        pygame.draw.rect(screen, self.color, self.rect)
-        
-    def update(self):
-        global camx,camy
-        if self.transmit == 1:
-            camx = self.camx
-            camy = self.camy
-        else:
-            self.camx = camx
-            self.camy = camy
-        
-        self.draw()        
+      
         
                     
 firstquit = 1
