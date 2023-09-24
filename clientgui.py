@@ -14,8 +14,8 @@ fpsClock = pygame.time.Clock()
 xtosend,ytosend = 69,0
 width, height = 640, 480
 screen = pygame.display.set_mode((width, height))
-tiles = []
-camx,camy = 0,0
+
+
 
 class Player():
     def __init__(self,x, y,ID,name,camx,camy):
@@ -27,24 +27,24 @@ class Player():
         self.name = name
     def draw(self):
         global width,height
-        self.rect = Rect(width/2,height/2,40,40)
+        self.rect = Rect(width/2-20,height/2-20,40,40)
         pygame.draw.rect(screen, (255,255,0), self.rect)
         self.text_surface = base_font.render(self.name, True, (255, 255, 255))
         screen.blit(self.text_surface, (width/2, height/2-40))
     def move(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
-            self.camx -= 10
-            self.x +=10
+            self.camx -= 5
+            self.x +=5
         if keys[pygame.K_LEFT]:
-            self.camx += 10
-            self.x -=10
+            self.camx += 5
+            self.x -=5
         if keys[pygame.K_UP]:
-            self.camy += 10
-            self.y-=10
+            self.camy += 5
+            self.y-=5
         if keys[pygame.K_DOWN]:
-            self.camy -= 10
-            self.y +=10
+            self.camy -= 5
+            self.y +=5
     def update(self):
         self.move()
         self.draw()
@@ -127,4 +127,47 @@ def run():
     pygame.display.flip()
     fpsClock.tick(fps)
     return xtosend,ytosend,msgtosend
+
+def generate_map(surf):
+    
+    
+    f = open("map2.txt", 'r')
+    length = 0
+    for line in f:
+        length = len(line)
+    f.close()
+    spacex = length/2*40
+    spacey = length/2*40
+    spacex = -spacex
+    spacey = -spacey
+    color = (0,0,0)
+    
+    f = open("map2.txt", 'r')
+    for line in f:
+        spacex = length/2*40
+        spacex = -spacex
+        print("line")
+        for char in line:
+            if char == "0":
+                color = (0,120,0)
+            if char == "1":
+                color = (0,200,0)
+            if char == "2":
+                color = (101,67,33)
+            if char == "3":
+                color = (0,120,0)
+            if char == "4":
+                color = (200,200,0)
+            if char == "5":
+                color =(100,100,255)
+            rect = Rect(spacex,spacey,40,40)
+            
+            pygame.draw.rect(surf, color, rect)
+            spacex+= 40
+            print("char")
+        spacey += 40
+    spacey = 0     
+        
+    f.close()
+    return spacex,spacey,surf
 

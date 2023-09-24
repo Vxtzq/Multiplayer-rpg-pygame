@@ -47,38 +47,13 @@ passwordactive = False
 login = False
 buttontext = "login"
 buttonchangetext = ""
-
+camx,camy = 0,0
 client = None
 lastglitter = 0
 show = 1
 
-def generate_map():
-    global tiles
-    
-    f = open("map2.txt", 'r')
-    length = 0
-    for line in f:
-        length = len(line)
-    f.close()
-    spacex = length/2*40
-    spacey = length/2*40
-    spacex = -spacex
-    spacey = -spacey
-    
-    f = open("map2.txt", 'r')
-    for line in f:
-        spacex = length/2*40
-        spacex = -spacex
-        print("line")
-        for char in line:
-            tile = Tile(spacex,spacey,0,0,str(char))
-            tiles.append(tile)
-            spacex+= 40
-            print("char")
-        spacey += 40
-    spacey = 0     
-        
-    f.close()
+
+
 
 def text_box(coloraround,events,active,rect,text,last_timer):
     global color_active,color_passive,show
@@ -151,37 +126,8 @@ def text_box(coloraround,events,active,rect,text,last_timer):
     
     return active, text,last_timer
 
-class Tile():
-    def __init__(self,x, y,camx,camy,name):
-        self.x = x
-        self.y = y
-        self.camx = camx
-        self.camy = camy
-        self.name =  name
-        self.transmit = 0
-        self.color = (0,0,200)
-        if name == "0":
-            self.color = (0,120,0)
-        if name == "1":
-            self.color = (0,200,0)
-        if name == "2":
-            self.color = (101,67,33)
-        if name == "3":
-            self.color = (0,120,0)
-        if name == "4":
-            self.color = (200,200,0)
-        if name == "5":
-            (100,100,255)
+
         
-    def draw(self):
-        self.rect = Rect(self.x+self.camx,self.y+self.camy,40,40)
-        pygame.draw.rect(screen, self.color, self.rect)
-        
-    def update(self):
-        global camx,camy
-        self.camx = camx
-        self.camy = camy
-        self.draw()  
 
 def button(success,rect,coloractive,colorpassive,coloraround,text,textcolor,font=base_font,new=None):
     global register,client
@@ -286,7 +232,8 @@ while launcher:
     # clock.tick(60) means that for every second at most
     # 60 frames should be passed.
     clock.tick(60)
-nouse = None    
+nouse = None
+
 while launcherend:
 
     screen.fill((255, 255, 255))
@@ -314,16 +261,19 @@ change = 0
 entitychange = 0
 entitiesbackup = []
 
-generate_map()
+
+BACKGROUND = pygame.Surface((40*128, 40*128))
+spacex,spacey,BACKGROUND = generate_map(BACKGROUND)
+backgroundwidth = BACKGROUND.get_width()
+backgroundheight = BACKGROUND.get_height()
+
+
 while True:
-    
     
     camx = player.camx
     camy = player.camy
-    tiletransmitter = tiles[0]
-    tiletransmitter.camx = camx
-    tiletransmitter.camy = camy
-    tiletransmitter.transmit = 1
+    
+    
     
     for entity in entities:        
         if pseudos != entity.pseudos:
@@ -336,7 +286,7 @@ while True:
          for entity in entities:
             entity.entities = entities
          entitychange = 0
-    print(pseudos)
+    
     if player.name == "":
         for pseudo in pseudos:
             if pseudo[1] == player.ID:
@@ -404,14 +354,13 @@ while True:
         else:
             globalid = int(msg.replace("first",""))
             player.ID = globalid
-            #print("global" +str(globalid))
-    for tile in tiles:
-        #print("test")
-        tile.update()
-    for entity in entities:
-        #print("test")
-        entity.update()
+            
     
+    
+    for entity in entities:
+        
+        entity.update()
+    screen.blit(BACKGROUND, (-backgroundwidth/2+camx, -backgroundheight/2+camy))
     player.update()
     if entities != entitiesbackup:
         entitychange = 1
@@ -419,8 +368,5 @@ while True:
     clock.tick(60)
     print(clock.get_fps())
     
-    pygame.display.flip()
     
-    
-    #print(f"[SERVER] {msgtosend}")
 pygame.quit()
