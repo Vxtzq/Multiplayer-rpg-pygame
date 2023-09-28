@@ -1,10 +1,10 @@
 import socket
 import threading
 from auth import *
-
+import time
 
 #IP = socket.gethostbyname(socket.gethostname())
-IP = "localhost"
+IP = ""
 PORT = 4003
 ADDR = (IP, PORT)
 SIZE = 1024

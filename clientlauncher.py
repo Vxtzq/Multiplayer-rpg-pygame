@@ -3,9 +3,11 @@ import pygame
 import sys
 from clientsocket import *
 from tilemap import *
+from chunksgenerator import *
 
   
 camx,camy = 0,0
+relx,rely = 0,0
 launcherend = True
 # pygame.init() will initialize all
 # imported module
@@ -52,7 +54,9 @@ camx,camy = 0,0
 client = None
 lastglitter = 0
 show = 1
-
+xchunk = 0
+ychunk = 0
+chunk = generate_chunk(xchunk,ychunk,100,100)
 
 
 
@@ -265,18 +269,51 @@ change = 0
 entitychange = 0
 entitiesbackup = []
 
-
-BACKGROUND = pygame.Surface((40*650, 40*650))
-spacex,spacey,BACKGROUND = generate_map(BACKGROUND)
-backgroundwidth = BACKGROUND.get_width()
-backgroundheight = BACKGROUND.get_height()
+backgrounds = []
+BACKGROUND = None
+spacex,spacey,BACKGROUND = generate_map(chunk)
+backgrounds.append((xchunk,ychunk,BACKGROUND))
 
 
 while True:
     
     camx = player.camx
     camy = player.camy
-    
+    relx = player.relx
+    rely = player.rely
+    if relx >= 100*50:
+        print("newchunk")
+        xchunk += 100*50
+        
+        spacex,spacey,BACKGROUND = generate_map(chunk)
+        backgrounds.append((xchunk,ychunk,BACKGROUND))
+        chunk = generate_chunk(xchunk/50,ychunk/50,100,100)
+        
+    if rely >= 100*50:
+        print("newchunk")
+        ychunk += 100*50
+        
+        spacex,spacey,BACKGROUND = generate_map(chunk)
+        backgrounds.append((xchunk,ychunk,BACKGROUND))
+        chunk = generate_chunk(xchunk/50,ychunk/50,100,100)
+        
+    if relx <= 0:
+        print("newchunk")
+        xchunk -= 100*50
+        
+        spacex,spacey,BACKGROUND = generate_map(chunk)
+        backgrounds.append((xchunk,ychunk,BACKGROUND))
+        chunk = generate_chunk(xchunk/50,ychunk/50,100,100)
+        
+    if rely <= 0:
+        print("newchunk")
+        ychunk -=100*50
+        
+        spacex,spacey,BACKGROUND = generate_map(chunk)
+        backgrounds.append((xchunk,ychunk,BACKGROUND))
+        chunk = generate_chunk(xchunk/50,ychunk/50,100,100)
+        
+        
     
     
     for entity in entities:        
@@ -360,7 +397,11 @@ while True:
             player.ID = globalid
             
     screen.fill((100, 100, 255))
-    screen.blit(BACKGROUND, (-10000+camx, -10000+camy))
+    for background in backgrounds:
+        chunkx = background[0]
+        chunky = background[1]
+        print(chunkx,chunky)
+        screen.blit(background[2], (chunkx+camx, chunky+camy))
     for entity in entities:
         entity.camx = camx-20
         entity.camy = camy-20
@@ -372,7 +413,7 @@ while True:
             entitychange = 1
         entitiesbackup = entities
     clock.tick(60)
-    print(clock.get_fps())
+    #print(relx,rely)
     
     
 pygame.quit()
