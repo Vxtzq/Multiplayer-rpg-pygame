@@ -5,3 +5,5 @@ usertest,test
 user2,imuser
 bite,bite
 petasse,petasse
+Vxtzq,123
+NicoNitro,RPG-31-

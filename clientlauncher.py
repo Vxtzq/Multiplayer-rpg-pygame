@@ -2,8 +2,11 @@
 import pygame
 import sys
 from clientsocket import *
-from tilemap import *
-from chunksgenerator import *
+
+from clientgui import *
+from maploader import *
+map_data = None
+from variables import *
 
   
 camx,camy = 0,0
@@ -12,11 +15,11 @@ launcherend = True
 # pygame.init() will initialize all
 # imported module
 pygame.init()
-  
-clock = pygame.time.Clock()
+
+
 
 # it will display on screen
-screen = pygame.display.set_mode([width, height])
+screen = pygame.display.set_mode([600, 500])
   
 # basic font for user typed
 base_font = pygame.font.Font(None, 32)
@@ -54,11 +57,9 @@ camx,camy = 0,0
 client = None
 lastglitter = 0
 show = 1
-xchunk = 0
-ychunk = 0
-chunk = generate_chunk(xchunk,ychunk,100,100)
 
 
+map_data = load_map("map2.txt")
 
 def text_box(coloraround,events,active,rect,text,last_timer):
     global color_active,color_passive,show
@@ -132,7 +133,7 @@ def text_box(coloraround,events,active,rect,text,last_timer):
     return active, text,last_timer
 
 
-        
+suss = []    
 
 def button(success,rect,coloractive,colorpassive,coloraround,text,textcolor,font=base_font,new=None):
     global register,client
@@ -175,6 +176,7 @@ def button(success,rect,coloractive,colorpassive,coloraround,text,textcolor,font
 
 launcher = True
 while launcher:
+    
     screen.fill((255, 255, 255))
         # display.flip() will update only a portion of the
     # screen to updated, not full area
@@ -256,9 +258,13 @@ while launcherend:
     screen.blit(text_surface, (200, 150))
     success,nouse = button(success,buttonrect3,color1,color3,color2,"Play",white,new="play")
     if success == "play":
+        
+        print(finished)
         password_surface = base_font.render("loading map...", True, (0,0,0))
+        
         # render at position stated in arguments
         screen.blit(password_surface, (200, 300))
+        pygame.display.flip()
         launcherend = False
     pygame.display.flip()
 pseudosent = 0
@@ -268,50 +274,25 @@ idsbackup = []
 change = 0
 entitychange = 0
 entitiesbackup = []
+last_costume = 0
+watercostume = 0
 
-backgrounds = []
-BACKGROUND = None
-spacex,spacey,BACKGROUND = generate_map(chunk)
-backgrounds.append((xchunk,ychunk,BACKGROUND))
-
+screen = pygame.display.set_mode([width, height])
+player_start_pos = [player.x,player.y]
 
 while True:
     
+    player_pos = [player.x,player.y]
+    player_offset = player.offset
     camx = player.camx
     camy = player.camy
-    relx = player.relx
-    rely = player.rely
-    if relx >= 100*50:
-        print("newchunk")
-        xchunk += 100*50
-        
-        spacex,spacey,BACKGROUND = generate_map(chunk)
-        backgrounds.append((xchunk,ychunk,BACKGROUND))
-        chunk = generate_chunk(xchunk/50,ychunk/50,100,100)
-        
-    if rely >= 100*50:
-        print("newchunk")
-        ychunk += 100*50
-        
-        spacex,spacey,BACKGROUND = generate_map(chunk)
-        backgrounds.append((xchunk,ychunk,BACKGROUND))
-        chunk = generate_chunk(xchunk/50,ychunk/50,100,100)
-        
-    if relx <= 0:
-        print("newchunk")
-        xchunk -= 100*50
-        
-        spacex,spacey,BACKGROUND = generate_map(chunk)
-        backgrounds.append((xchunk,ychunk,BACKGROUND))
-        chunk = generate_chunk(xchunk/50,ychunk/50,100,100)
-        
-    if rely <= 0:
-        print("newchunk")
-        ychunk -=100*50
-        
-        spacex,spacey,BACKGROUND = generate_map(chunk)
-        backgrounds.append((xchunk,ychunk,BACKGROUND))
-        chunk = generate_chunk(xchunk/50,ychunk/50,100,100)
+    now = pygame.time.get_ticks()
+    if now - last_costume >= 250:
+        if watercostume == 1:
+            watercostume = 0
+        else:
+            watercostume = 1
+        last_costume = now
         
         
     
@@ -333,17 +314,34 @@ while True:
             if pseudo[1] == player.ID:
                 player.name = pseudo[0]
         
-        
+    if chattosend != []:
+        client.send(("a"+str(chattosend[-1])).encode(FORMAT))
+        chattosend.pop(-1)
     if pseudosent == 0:
         msg = "p"+username_text
         client.send(msg.encode(FORMAT))
         pseudosent = 1
     else:
         pass
-    xtosend, ytosend, msgtosend = run()
+    
+            
+    screen.fill((100, 100, 255))
+    drawbg(watercostume, width, height, screen, player_start_pos, player_offset,map_data)
+    player.update()
+    for entity in entities:
+        entity.camx = camx-20
+        entity.camy = camy-20
+        entity.update()
+    xtosend, ytosend, msgtosend = run(chats)
     msg = 'c' + str([xtosend,ytosend])
     
-#    
+    
+    
+    if entities != [] or entities != None:
+        if entities != entitiesbackup:
+            entitychange = 1
+        entitiesbackup = entities
+        
     if msgtosend == "":
         client.send(msg.encode(FORMAT))
     else:
@@ -354,66 +352,69 @@ while True:
         connected = False
     else:
         msg = client.recv(SIZE).decode(FORMAT)
+        try:
+            if msg[0] != "f":
+                pass
+        except:
+            connected = False
+            client.send("quit".encode(FORMAT))
+            break
+        if msg[0] == "a":
+        
+        
+                res = str(msg).replace("a","")
+                res = ast.literal_eval(res)
+                print("iii receievedddd")
+                chats = res
         if msg[0] != "f":
             if msg[0] != "p":
-                res = ast.literal_eval(msg)
-                
-                counter = 0
-                ids = []
-                idsreceived = []
-                
-                            
-                for clientpos in res:
-                    pos = clientpos
-                    clientid = pos[0]
-                    clientxy = ast.literal_eval(pos[1])
-                    ids.append(clientid)
-                    index = 0
-                    dontadd = 0
-                    if idsbackup != ids:
-                        idsbackup = ids
-                        change = 1
-                    for entity in entities:
-                        if entity.ID == clientid:
-                            entity.x = clientxy[0]
-                            entity.y = clientxy[1]
-                            index += 1
-                            dontadd = 1
+                if msg[0] != "a":
+                    res = ast.literal_eval(msg)
                     
-                    if dontadd == 0:
-                        if clientid != globalid:
-                            entity = Entity(clientxy[0],clientxy[1],clientid,pseudos,ids,entities,0,0)
-                            entities.append(entity)
-                            msg = "p"+username_text
-                            client.send(msg.encode(FORMAT))
+                    counter = 0
+                    ids = []
+                    idsreceived = []
+                    
+                                
+                    for clientpos in res:
+                        pos = clientpos
+                        clientid = pos[0]
+                        clientxy = ast.literal_eval(pos[1])
+                        ids.append(clientid)
+                        index = 0
+                        dontadd = 0
+                        if idsbackup != ids:
+                            idsbackup = ids
+                            change = 1
+                        for entity in entities:
+                            if entity.ID == clientid:
+                                entity.x = clientxy[0]
+                                entity.y = clientxy[1]
+                                index += 1
+                                dontadd = 1
+                        
+                        if dontadd == 0:
+                            if clientid != globalid:
+                                entity = Entity(clientxy[0],clientxy[1],clientid,pseudos,ids,entities,0,0)
+                                entities.append(entity)
+                                msg = "p"+username_text
+                                client.send(msg.encode(FORMAT))
+                
             else:
                 
                 msg = msg.replace("pseudos","")
                 test = ast.literal_eval(msg.replace("pseudos",""))
                 pseudos = test
-                                   
+        
+                
+                                       
         else:
             globalid = int(msg.replace("first",""))
             player.ID = globalid
-            
-    screen.fill((100, 100, 255))
-    for background in backgrounds:
-        chunkx = background[0]
-        chunky = background[1]
-        print(chunkx,chunky)
-        screen.blit(background[2], (chunkx+camx, chunky+camy))
-    for entity in entities:
-        entity.camx = camx-20
-        entity.camy = camy-20
-        entity.update()
     
-    player.update()
-    if entities != [] or entities != None:
-        if entities != entitiesbackup:
-            entitychange = 1
-        entitiesbackup = entities
-    clock.tick(60)
+    
     #print(relx,rely)
     
     
 pygame.quit()
+sys.exit()

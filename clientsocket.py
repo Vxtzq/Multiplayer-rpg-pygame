@@ -14,7 +14,7 @@ def newplayer(username,password,connectiontype):
     valid = 0
     globalid = 0
     #IP = socket.gethostbyname(socket.gethostname())
-    IP = ""
+    IP = "192.168.1.23"
     PORT = 4003
     ADDR = (IP, PORT)
     SIZE = 4096
@@ -25,7 +25,7 @@ def newplayer(username,password,connectiontype):
     client.connect(ADDR)
     print("connected")
     info = valid_connection(username,password,connectiontype,client)
-    if info != "loginvalid":
+    if info != "logged in successfully":
         return info,client
     else:
         connected = True
@@ -50,13 +50,13 @@ def valid_connection(usr,pwd,cotype,client,SIZE=1024,FORMAT="utf-8"):
         msg = client.recv(SIZE).decode(FORMAT)
         if msg != "":
             if msg == "loginvalid":
-                return "loginvalid"
+                return "logged in successfully"
             if msg == "logininvalid":
-                return "logininvalid"
+                return "Failed to log in"
             if msg == "registervalid":
-                return "registervalid"
+                return "registered successfully"
             if msg == "registerinvalid":
-                return "registerinvalid"
+                return "failed to register"
             
         
 
