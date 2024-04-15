@@ -59,8 +59,9 @@ lastglitter = 0
 show = 1
 
 
-map_data = load_map("map2.txt")
-
+map_data = load_map("map.txt")
+cursor = pygame.image.load("assets/cursor.png").convert_alpha()
+cursor = pygame.transform.scale(cursor, (40,40))
 def text_box(coloraround,events,active,rect,text,last_timer):
     global color_active,color_passive,show
     mycolor = None
@@ -174,6 +175,8 @@ def button(success,rect,coloractive,colorpassive,coloraround,text,textcolor,font
     screen.blit(text_surface, (rect.x+45, rect.y+10))
     return success,client
 
+
+
 launcher = True
 while launcher:
     
@@ -276,12 +279,14 @@ entitychange = 0
 entitiesbackup = []
 last_costume = 0
 watercostume = 0
-
+chatfirsttime = 0
 screen = pygame.display.set_mode([width, height])
 player_start_pos = [player.x,player.y]
-
+last_chat = 0
+all_walls = pygame.sprite.Group()
+all_goals = pygame.sprite.Group()
 while True:
-    
+    mouse_x, mouse_y = pygame.mouse.get_pos()
     player_pos = [player.x,player.y]
     player_offset = player.offset
     camx = player.camx
@@ -324,15 +329,40 @@ while True:
     else:
         pass
     
-            
+          
     screen.fill((100, 100, 255))
-    drawbg(watercostume, width, height, screen, player_start_pos, player_offset,map_data)
-    player.update()
+    walls,goals = drawbg(watercostume, width, height, screen, player_start_pos, player_offset,map_data)
+    all_walls.empty()
+    all_goals.empty()
+    for w in walls:
+        all_walls.add(w)
+    for g in goals:
+        all_goals.add(g)
+    # Adjust horizontal movement
+    collisions = pygame.sprite.spritecollide(player, all_goals, False)
+    if collisions:
+        for goal in collisions:
+            if goal.team == "red":
+                text_surface = base_font.render("red team colliding", True, (255, 0, 0))
+                screen.blit(text_surface, (width/2, height/2))
+            if goal.team == "blue":
+                text_surface = base_font.render("blue team colliding", True, (0, 0, 255))
+                screen.blit(text_surface, (width/2, height/2))
+    
+    
+    if line_length(width/2, height/2, mouse_x, mouse_y) > 300:
+        pygame.draw.line(screen, (250,0,0), (width/2, height/2), (mouse_x, mouse_y),3)
+    else:
+        pygame.draw.line(screen, (0,250,0), (width/2, height/2), (mouse_x, mouse_y),3)
+    screen.blit(cursor,(mouse_x-20,mouse_y-20))
+    player.update(all_walls)
+    #player.collide_test(all_walls,"x")
+    #player.collide_test(all_walls,"y")
+    
     for entity in entities:
-        entity.camx = camx-20
-        entity.camy = camy-20
+        
         entity.update()
-    xtosend, ytosend, msgtosend = run(chats)
+    xtosend, ytosend, msgtosend,chat = run(chats)
     msg = 'c' + str([xtosend,ytosend])
     
     
@@ -345,6 +375,7 @@ while True:
     if msgtosend == "":
         client.send(msg.encode(FORMAT))
     else:
+        
         client.send("quit".encode(FORMAT))
     
 
@@ -359,12 +390,14 @@ while True:
             connected = False
             client.send("quit".encode(FORMAT))
             break
+        
         if msg[0] == "a":
         
         
-                res = str(msg).replace("a","")
+                res = str(msg)
+                res = res[1:]
                 res = ast.literal_eval(res)
-                print("iii receievedddd")
+                
                 chats = res
         if msg[0] != "f":
             if msg[0] != "p":
@@ -390,6 +423,8 @@ while True:
                             if entity.ID == clientid:
                                 entity.x = clientxy[0]
                                 entity.y = clientxy[1]
+                                entity.camx = camx
+                                entity.camy = camy
                                 index += 1
                                 dontadd = 1
                         
@@ -412,9 +447,13 @@ while True:
             globalid = int(msg.replace("first",""))
             player.ID = globalid
     
-    
-    #print(relx,rely)
-    
+    now = pygame.time.get_ticks()
+    if now -last_chat >100:
+            
+        msg = "!chat?"
+        client.send(msg.encode(FORMAT))
+        last_chat = now
+        
     
 pygame.quit()
 sys.exit()
