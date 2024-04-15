@@ -4,7 +4,7 @@ from auth import *
 import time
 
 #IP = socket.gethostbyname(socket.gethostname())
-IP = "192.168.1.23"
+IP = "192.168.1.38"
 PORT = 4003
 ADDR = (IP, PORT)
 SIZE = 1024
@@ -23,6 +23,7 @@ def handle_client(conn, addr):
     connected = True
     clientname = ""
     chatmsgsent = 0
+    chatactualize = 0
     while connected:
         
         msg = conn.recv(SIZE).decode(FORMAT)
@@ -53,12 +54,16 @@ def handle_client(conn, addr):
                     createclientdata(clientname)
                 
                 newclient = 1
-            if str(msg)[0] == "a":
-                chats.append(str(clientname)+" : "+str(msg).replace("chat",""))
-                print(chats)
+            
+            if str(msg) == "!chat?":
                 conn.send(bytes("a"+str(chats),"utf-8"))
-                
                 chatmsgsent = 1
+            if str(msg)[0] == "a":
+                
+                    
+                chats.append(str(clientname)+" : "+str(msg)[1:])
+                
+            
             if str(msg)[0] == "c":
                 
                 #print(f"[{addr}] {msg}")
