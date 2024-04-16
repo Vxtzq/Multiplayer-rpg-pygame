@@ -102,15 +102,17 @@ class Player():
         hits = pygame.sprite.spritecollide(self, walls, False)
         if hits:
             
-                self.x -= self.change_x
-                self.camx -= -self.change_x
-                self.offset[0] -= self.change_x/TILE_SIZE
-                 
+            self.x -= self.change_x
+            self.camx -= -self.change_x
+            self.offset[0] -= self.change_x/TILE_SIZE
+        
             
-            
-                self.y -= self.change_y
-                self.camy -= -self.change_y
-                self.offset[1] -= self.change_y/TILE_SIZE
+            self.y -= self.change_y
+            self.camy -= -self.change_y
+            self.offset[1] -= self.change_y/TILE_SIZE
+                
+                
+                    
                     
                 
                     

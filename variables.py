@@ -5,5 +5,5 @@ chattosend = []
 msgtosend = ""
 walls = []
 goals = []
-
+entities = []
 initial = [0,0]

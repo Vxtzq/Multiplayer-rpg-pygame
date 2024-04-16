@@ -22,9 +22,13 @@ def newplayer(username,password,connectiontype):
     DISCONNECT_MSG = "!DISCONNECT"
     
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(ADDR)
-    print("connected")
-    info = valid_connection(username,password,connectiontype,client)
+    try:
+        client.connect(ADDR)
+        print("connected")
+        info = valid_connection(username,password,connectiontype,client)
+    except:
+        info = "&rNo server found"
+    
     if info != "logged in successfully":
         return info,client
     else:
@@ -52,11 +56,13 @@ def valid_connection(usr,pwd,cotype,client,SIZE=1024,FORMAT="utf-8"):
             if msg == "loginvalid":
                 return "logged in successfully"
             if msg == "logininvalid":
-                return "Failed to log in"
+                return "&rFailed to log in"
             if msg == "registervalid":
-                return "registered successfully"
+                return "&gregistered successfully"
             if msg == "registerinvalid":
-                return "failed to register"
+                return "&rfailed to register"
+            if msg == "alreadylogged":
+                return "&rDuplicate login"
             
         
 

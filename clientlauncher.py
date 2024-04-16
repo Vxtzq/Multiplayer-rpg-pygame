@@ -194,25 +194,17 @@ while launcher:
     # render at position stated in arguments
     screen.blit(username_surface, (200, 60))
     if success != None:
-        if success == "invalid":
-            error_surface = little_font.render("Invalid username or password", True, (200,0,0))
-            # render at position stated in arguments
-            screen.blit(error_surface, (200, 250))
         if success == "quit":
             launcher = False
-        if success == "internal":
-            error_surface = little_font.render("An internal error occured, try again.", True, (200,0,0))
-            # render at position stated in arguments
-            screen.blit(error_surface, (200, 250))
-        if success == "notfound":
-            error_surface = little_font.render("No server found", True, (200,0,0))
-            # render at position stated in arguments
-            screen.blit(error_surface, (200, 250))
+        
+        
         if success == True:
             pass
         else:
-            
-            error_surface = little_font.render(str(success), True, (200,0,0))
+            if success[:2] == "&r":
+                error_surface = little_font.render(str(success.replace("&r","")), True, (200,0,0))
+            else:
+                error_surface = little_font.render(str(success.replace("&g","")), True, (0,200,0))
             # render at position stated in arguments
             screen.blit(error_surface, (200, 250))
             if success == "loginvalid":
@@ -373,7 +365,10 @@ while True:
         entitiesbackup = entities
         
     if msgtosend == "":
-        client.send(msg.encode(FORMAT))
+        try:
+            client.send(msg.encode(FORMAT))
+        except:
+            break
     else:
         
         client.send("quit".encode(FORMAT))
