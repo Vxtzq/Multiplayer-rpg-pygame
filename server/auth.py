@@ -9,7 +9,7 @@ def handle_authentication(authtype, msg):
         valid = 1
         for line in f:
             
-            if line == msg.replace("r,","")+"\n":
+            if line.split(',')[0] == msg.replace("r,","").split(',')[0]:
                 valid = 0
         f.close()
         if valid == 1:

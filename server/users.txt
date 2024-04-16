@@ -1,3 +1,4 @@
 Vxtzq,123
 NicoNitro,RPG-31-
 ADMIN,myserver
+sus,123

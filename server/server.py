@@ -41,7 +41,7 @@ def handle_client(conn, addr):
             index = 0
             for pseudo in pseudos:
                 if pseudo[1] == addr[1]:
-                    del pseudo
+                    del pseudos[index]
                 index += 1
             
             connected = False
@@ -101,6 +101,12 @@ def handle_client(conn, addr):
                     
             if str(msg)[0] == "l":
                 success = handle_authentication("login", msg)
+                for pseudo in pseudos:
+                    print(msg.replace("l","").split(',')[1],pseudo[0])
+                    if msg.replace("l","").split(',')[1] == pseudo[0]:
+                        success = "alreadylogged"
+                
+                
                 conn.send(bytes(success,"utf-8"))
             if str(msg)[0] == "r":
                 success = handle_authentication("register", msg)        
