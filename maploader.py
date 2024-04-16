@@ -40,7 +40,7 @@ def render_tiles(map_data, WIDTH, HEIGHT, player_pos, cam_offset,screen):
     visible_tiles = []
     
     # Extract player's position
-    player_tile_x, player_tile_y = [initial[0]+ 31,initial[1]+20]
+    player_tile_x, player_tile_y = [initial[0],initial[1]]
     
     # Calculate the visible area based on player's position, camera offset, and screen size
     start_x = max(player_tile_x - (WIDTH // TILE_SIZE) // 2, 0)
@@ -122,7 +122,7 @@ def drawbg(watercostume,WIDTH,HEIGHT,screen,player_pos,cam_offset,map_data):
             walls.append(w)
             
         if tile == "3":
-            t = Tile((200, 200, 200), int(pos[0]), int(pos[1]),screen)
+            t = Tile((100, 200, 100), int(pos[0]), int(pos[1]),screen)
         if tile == "4":
             g = Goal((200, 100, 100), int(pos[0]), int(pos[1]),screen,"red")
             goals.append(g)

@@ -6,4 +6,4 @@ msgtosend = ""
 walls = []
 goals = []
 
-initial = [40,0]
+initial = [0,0]

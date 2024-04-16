@@ -330,7 +330,7 @@ while True:
         pass
     
           
-    screen.fill((100, 100, 255))
+    screen.fill((200, 200, 200))
     walls,goals = drawbg(watercostume, width, height, screen, player_start_pos, player_offset,map_data)
     all_walls.empty()
     all_goals.empty()
